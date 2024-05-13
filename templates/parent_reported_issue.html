@@ -1,0 +1,133 @@
+{% extends "base_generic.html" %}
+{% block content %}
+
+<style>
+  .container {
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    max-width: 1000px;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+  }
+
+  .gray-line {
+    height: 2px;
+    width: 1000px;
+    background-color: gray;
+  }
+
+  .comments-box {
+    background-color: #f0f0f0;
+    color: #333;
+    width: 80%;
+    box-sizing: border-box;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .label-left-align {
+    text-align: left;
+    font-weight: bold;
+    width: 80%;
+  }
+
+  .status-box {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 10px; /* rounded corners */
+      color: white;
+      text-align: center;
+      font-weight: bold;
+  }
+
+  .text-resolved { background-color: #28a745; }
+  .text-progress { background-color: #ffc107; }
+  .text-new { background-color: #dc3545; }
+
+  .category-box {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 10px; /* rounded corners */
+    color: black;
+    text-align: center;
+    font-weight: bold;
+    background-color: white;
+    border: 2px solid gray;
+  }
+
+  .tags {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .link {
+    text-decoration: none;
+  }
+</style>
+
+<div class="container mt-4">
+  <div class="content">
+      {% if reported_issue.report_name == None %}
+        <h2 class="mt-4"> <b> No report name :( </b> </h2>
+      {% else %}
+        <h2 class="mt-4" style="text-align: center; width: 80%;"> <b> {{ reported_issue.report_name }} </b> </h2>
+      {% endif %}
+
+    <h4 class="mt-2 mb-4">Reporting {{ reported_issue.organization_name }}</h4>
+
+    <div class="tags">
+      <!-- Change color depending on status -->
+      {% if reported_issue.status == reported_issue.Status.RESOLVED %}
+        <span class="status-box text-resolved">{{ reported_issue.status }}</span>
+      {% elif reported_issue.status == reported_issue.Status.IN_PROGRESS %}
+        <span class="status-box text-progress">{{ reported_issue.status }}</span>
+      {% elif reported_issue.status == reported_issue.Status.NEW %}
+        <span class="status-box text-new">{{ reported_issue.status }}</span>
+      {% else %}
+        <span class="status-box" style="background-color: #6c757d;">{{ reported_issue.status }}</span>
+      {% endif %}
+
+      <span class="category-box">{{ reported_issue.get_report_type_display }}</span>
+    </div>
+
+    <hr class="gray-line mt-4">
+
+    <label class="mt-4 label-left-align" for="report-details">Report details</label>
+    <div class="comments-box" id="report-details">
+        {{ reported_issue.report_text }}
+    </div>
+
+    {% if reported_issue.file_url != None %}
+      <h4 class="mt-4"><a href="{{ reported_issue.file_url }}" class="link"><span class="material-icons">open_in_new</span> View submitted file</a></h4>
+    {% endif %}
+
+    {% block different-content %}
+    {% endblock %}
+
+    <form action="{% url 'delete_report' %}" class="mt-4" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="issue_id" value={{reported_issue.id}}>
+      <input type="submit" value="💀 Delete Report 💀" class="btn btn-danger mt-4">
+    </form>
+
+    <!-- back button -->
+    <a href="{% url 'profile' %}" class="btn btn-warning mt-5 btn-lg">Back</a>
+
+  </div>
+</div>
+
+<br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+{% endblock %}

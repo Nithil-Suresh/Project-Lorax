@@ -1,0 +1,12 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="centered-page">
+    <h2 class="mt-4">Successfully logged out.</h2>
+    <img src="{% static 'sadlorax.png' %}" alt="Sad Lorax" style="width: 600px; height: auto;">
+    <a href="{% url 'landing_page' %}" class="btn btn-warning mt-5 btn-lg">Return to homepage</a>
+</div>
+
+{% endblock %}

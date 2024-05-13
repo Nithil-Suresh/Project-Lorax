@@ -1,0 +1,65 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<style>
+    .form-group textarea {
+        padding: 5px;
+        padding-left: 10px;
+    }
+</style>
+
+<div class="container mt-5">
+
+    <form action="/upload/" method="post" enctype="multipart/form-data" class="needs-validation">
+    {% csrf_token %}
+        <h2 class="mb-4">🌎 Create Report 🌎</h2>
+
+        <div class="row col-md-3">
+            <div class="form-group mt-2 mb-2">
+              <textarea name="title" rows="1" cols="50" placeholder="Title" maxlength="50" required>{{reported_issue.report_name}}</textarea>
+            </div>
+
+            <div class="form-group mt-2 mb-2">
+              <textarea name="organization" rows="1" cols="50" placeholder="Organization name" required>{{reported_issue.organization_name}}</textarea>
+            </div>
+
+            <div class="form-group mt-2 mb-2">
+                <b><label for="report_type_select" class="mb-2">Type of report:</label></b>
+                <select name="report_type" id="report_type_select" class="form-control" required>
+                    <option value="" selected disabled>
+                        ⬇️ Select type of report
+                    </option>
+                    <option value="P">Air or water pollution</option>
+                    <option value="E">Excessive energy usage</option>
+                    <option value="W">Excessive waste</option>
+                    <option value="R">Use of unsustainable resources</option>
+                    <option value="N">Destruction of nature</option>
+                    <option value="S">Harmful supply chains</option>
+                    <option value="O">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group mt-2 mb-2">
+              <textarea name="text" rows="5" cols="50" placeholder="What is the environmental violation?" required>{{reported_issue.report_text}}</textarea>
+            </div>
+
+            <input type="hidden" name="issue_id" value={{reported_issue.id}}>
+        </div>
+
+        <h4 class="mt-4">Upload File</h4>
+        <div class="mb-3">
+            <label for="fileUpload" class="form-label">Choose a TXT, JPG, or PDF file to accompany your report:</label>
+            <input type="file" class="form-control" id="fileUpload" name="fileUpload" accept=".txt, .jpg, .jpeg, .pdf" style="width: 400px;">
+            <div class="invalid-feedback">
+                Please choose a file to upload.
+            </div>
+        </div>
+        <button type="submit" class="btn btn-lg btn-primary mt-4 mb-4">Submit Report</button>
+    </form>
+    <div class="mt-4">
+      <a href="{% url 'landing_page' %}" class="btn btn-warning btn-lg">Back</a>
+    </div>
+</div>
+
+{% endblock %}

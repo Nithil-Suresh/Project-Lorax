@@ -1,0 +1,11 @@
+{% extends "parent_reported_issue.html" %}
+
+{% block different-content %}
+
+<label class="mt-4 label-left-align" for="report-details">Admin comments</label>
+<div class="comments-box" id="report-details">
+    {{ reported_issue.admin_comment }}
+</div>
+
+
+{% endblock %}

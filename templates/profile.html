@@ -1,0 +1,171 @@
+{% extends "base_generic.html" %}
+{% block content %}
+{% load static %}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+<style>
+  .container {
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .reports-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; // COLUMNS !!!
+    gap: 10px;
+    width: 75%;
+  }
+
+  .reports-grid-header {
+    background-color: #f2f2f2;
+    padding: 8px;
+    font-weight: bold;
+    padding-left: 20px;
+  }
+
+  .reports-grid-row {
+    display: contents;
+    color: black;
+  }
+
+  .reports-grid-item {
+    padding: 20px;
+    display: block;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .reports-grid-row:hover .reports-grid-item {
+    background-color: #f2f2f2;
+    transform: scale(1.03);
+    transition: transform 0.3s ease;
+  }
+
+  .search-box {
+    border-radius: 5px;
+    padding: 6px;
+    padding-left: 12px;
+    width: 100%;
+  }
+
+  .label-left-align {
+    text-align: left;
+    font-weight: bold;
+    width: 80%;
+  }
+</style>
+{% if not user.is_staff %}
+<div class="container mt-4">
+  <div class="content">
+    <!-- if admin -->
+    {% if perms.sites.view_site %}
+      <h1 class="mb-4">🌱 User Reports 🌱</h1>
+    {% else %}
+      <h1 class="mb-4">🌱 My Reports 🌱</h1>
+    {% endif %}
+
+    {% if files or search %}
+
+      <form action="{% url 'search' %}" method=GET>
+          <label for="site-search" class="label-left-align">Search by organization</label>
+          <input type="search" class="search-box mb-2" id="site-search" name="query">
+          <div class="form-group mt-2 mb-2">
+            <select name="report_type_filter" class="form-control">
+              <option value="" selected disabled>⬇️ Filter by type of report</option>
+              <option value="P">Air or water pollution</option>
+              <option value="E">Excessive energy usage</option>
+              <option value="W">Excessive waste</option>
+              <option value="R">Use of unsustainable resources</option>
+              <option value="N">Destruction of nature</option>
+              <option value="S">Harmful supply chains</option>
+              <option value="O">Other</option>
+            </select>
+            <select name="status_filter" class="form-control mt-2">
+              <option value="NONE" selected disabled>⬇️ Filter by status</option>
+              <option value="New">New</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+          </div>
+          <button class="btn btn-primary mt-4" type="submit" style="display: block; margin: 0 auto;">Search</button>
+        </form>
+
+        <button type="button" class="mb-4">
+          <a href="{% url 'profile'%}">Show all reports</a>
+        </button>
+
+      {% if files %}
+      <div class="reports-grid">
+        <div class="reports-grid-header">Organization</div>
+        <div class="reports-grid-header">Name</div>
+        <div class="reports-grid-header">Status</div>
+
+        {% for f in files %}
+          <a href="{% url 'view-reported-issue' f.id %}" class="reports-grid-row">
+            <div class="reports-grid-item">{{ f.organization }}</div>
+            <div class="reports-grid-item">{{ f.name }}</div>
+            <div class="reports-grid-item">
+              {% if f.status == "Resolved" %}
+                <span class="text-success">{{ f.status }}</span>
+              {% elif f.status == "In Progress" %}
+                <span style="color: #e6b800;">{{ f.status }}</span>
+              {% elif f.status == "New" %}
+                <span class="text-danger">{{ f.status }}</span>
+              {% else %}
+                {{ reported_issue.status }}
+              {% endif %}
+            </div>
+
+          </a>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+  {% else %}
+
+    <div style="width: 500px; text-align: center;">
+      <h4 class="mt-4">You don't have any reports yet!</h4>
+      <h4 class="mt-4">If you've witnessed any environmental harm caused by an organization, file a report.</h4>
+      <span class="material-symbols-outlined mt-2">arrow_downward</span>
+    </div>
+
+  {% endif %}
+
+    {% if not files and search %}
+      <div style="width: 500px; text-align: center;">
+        <h4 class="mt-4">Womp womp!</h4>
+        <h4>No reports match this search query.</h4>
+        <img src="{% static 'sadlorax.png' %}" alt="Sad Lorax" class="mt-3 mb-4" style="width: 150px; height: auto;">
+      </div>
+    {% endif %}
+
+  <!-- if not admin -->
+    {% if not perms.sites.view_site %}
+      <div class="mt-4">
+        <a href="{% url 'upload_file' %}" class="btn btn-warning btn-lg">File a new report</a>
+      </div>
+    {% endif %}
+
+    <div class="mt-4">
+      <a href="{% url 'landing_page' %}" class="btn btn-warning btn-lg">Back</a>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+    </div>
+  </div>
+</div>
+{% else %}
+<b> Sorry! You're logged in as a django admin, so you can't access the site as a normal user</b>
+{% endif %}
+
+
+{% endblock %}
